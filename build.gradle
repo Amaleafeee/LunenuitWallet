@@ -11,6 +11,17 @@ java {
     sourceCompatibility = '17'
 }
 
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Lunenuit-Wallet': 'org.example.LunenuitWalletApplication'
+    }
+    archiveBaseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
 configurations {
     compileOnly {
         extendsFrom annotationProcessor
