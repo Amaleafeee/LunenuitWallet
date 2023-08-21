@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lunenuit Wallet</title>
+</head>
+<body>
+<h1>LunenuitWallet</h1>
+
+<form th:if="${!user.isHasETHWallet()}" action="/user/cabinet" method="post">
+    <h2>Create or Use an Ethereum Wallet</h2>
+    <button type="submit" name="action" value="createWallet">Create ETH Wallet</button>
+    <button type="submit" name="action" value="restoreWallet">Use My Existing ETH Wallet</button>
+</form>
+
+<div id="keys" th:if="${user.isHasETHWallet()}">
+    <h2>Etherium</h2>
+    <p>ETH: <span th:text="${web3.getBalance(user.ETHAddress)}"></span></p>
+
+    <button id="transferButton">Withdraw</button>
+    <button id="publicKeyButton">Receive</button>
+    <button id="privateKeyButton">Show Private Key</button>
+    <button id="mnemonicButton">Show Mnemonic Phrase</button>
+    <button id="transactionListButton">Transaction History</button>
+
+    <div id="transferModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Withdraw</h2>
+            <form action="/user/cabinet" method="post">
+                <label for="recipientAddress">Recipient Address:</label>
+                <input type="text" id="recipientAddress" name="recipientAddress" required><br><br>
+                <label for="amount">Amount:</label>
+                <input type="text" id="amount" name="amount" required><br><br>
+                <p>Gas Price: <span th:text="${web3.getWithdrawTotalGasCost()}"></span></p>
+                <button type="submit" name="action" value="withdraw">Transfer</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="publicKeyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closePublicKeyModal">&times;</span>
+            <h2>Your address</h2>
+            <p><span th:text="${user.ETHAddress}"></span></p>
+        </div>
+    </div>
+
+    <div id="privateKeyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closePrivateKeyModal">&times;</span>
+            <h2>Private Key</h2>
+            <p>Private Key: <span th:text="${user.ETHPrivateKey}"></span></p>
+        </div>
+    </div>
+
+    <div id="mnemonicModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeMnemonicModal">&times;</span>
+            <h2>Mnemonic Phrase</h2>
+            <p>Mnemonic Phrase: <span th:text="${user.mnemonicWords}"></span></p>
+        </div>
+    </div>
+    <div id="transactionListModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeTransactionListModal">&times;</span>
+            <h2>Transaction History</h2>
+            <ul>
+                <li th:each="transaction : ${ETHTransactions.getETHTransactions()}">
+                    <span th:text="${transaction}"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const transferButton = document.getElementById("transferButton");
+    const transferModal = document.getElementById("transferModal");
+    const closeModal = document.getElementById("closeModal");
+    const publicKeyButton = document.getElementById("publicKeyButton");
+    const privateKeyButton = document.getElementById("privateKeyButton");
+    const mnemonicButton = document.getElementById("mnemonicButton");
+    const closePublicKeyModal = document.getElementById("closePublicKeyModal");
+    const closePrivateKeyModal = document.getElementById("closePrivateKeyModal");
+    const closeMnemonicModal = document.getElementById("closeMnemonicModal");
+    const transactionListButton = document.getElementById("transactionListButton");
+    const transactionListModal = document.getElementById("transactionListModal");
+    const closeTransactionListModal = document.getElementById("closeTransactionListModal");
+
+    transferButton.onclick = () => {
+        transferModal.style.display = "block";
+    };
+
+    closeModal.onclick = () => {
+        transferModal.style.display = "none";
+    };
+
+    publicKeyButton.onclick = () => {
+        const publicKeyModal = document.getElementById("publicKeyModal");
+        publicKeyModal.style.display = "block";
+    };
+
+    privateKeyButton.onclick = () => {
+        const privateKeyModal = document.getElementById("privateKeyModal");
+        privateKeyModal.style.display = "block";
+    };
+
+    mnemonicButton.onclick = () => {
+        const mnemonicModal = document.getElementById("mnemonicModal");
+        mnemonicModal.style.display = "block";
+    };
+
+    closePublicKeyModal.onclick = () => {
+        const publicKeyModal = document.getElementById("publicKeyModal");
+        publicKeyModal.style.display = "none";
+    };
+
+    closePrivateKeyModal.onclick = () => {
+        const privateKeyModal = document.getElementById("privateKeyModal");
+        privateKeyModal.style.display = "none";
+    };
+
+    closeMnemonicModal.onclick = () => {
+        const mnemonicModal = document.getElementById("mnemonicModal");
+        mnemonicModal.style.display = "none";
+    };
+
+    transactionListButton.onclick = () => {
+        transactionListModal.style.display = "block";
+    };
+
+    closeTransactionListModal.onclick = () => {
+        transactionListModal.style.display = "none";
+    };
+</script>
+</body>
+</html>
